@@ -63,7 +63,7 @@ public class DependencyGraph {
     }
 
     /**
-     * Returns all cells that depend on THIS cell.
+     * Returns all cells that THIS cell depends on.
      *
      * @param cell
      * @return set of dependencies.
@@ -74,8 +74,7 @@ public class DependencyGraph {
     }
 
     /**
-     * Returns all cells that THIS cell depends on.
-     *
+     * Returns all cells that depend on THIS cell.
      * @param cell
      * @return set of dependents.
      */
