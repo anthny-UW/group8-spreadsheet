@@ -121,10 +121,11 @@ public class Spreadsheet {
 
         }
 
-        List<Cell> order = topoSort(graph);
+        TopologicalSort sort = new TopologicalSort(this, graph);
+        boolean isSorted = sort.topsort();
 
-        for (Cell c : order) {
-            c.evaluate(this);
+        if (!isSorted) {
+            sort.revertToOldCells();
         }
     }
 
