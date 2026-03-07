@@ -103,6 +103,7 @@ public class TopologicalSort {
                     // Cycle found
                     System.out.println("Error: Cycle detected in dependency graph.");
                     myCycleDetected = true;
+                    revertToOldCells();
                     return;
                 }
                 
@@ -118,7 +119,7 @@ public class TopologicalSort {
      * Reverts the evaluations made to the cells.
      * Should be called when there is a cycle.
      */
-    public void revertToOldCells() {
+    private void revertToOldCells() {
         if (myOldCells != null) {
             for (Cell cell : myOldCells.keySet()) {
                 cell.setValue(myOldCells.get(cell));
