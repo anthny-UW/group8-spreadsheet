@@ -250,8 +250,7 @@ public class Spreadsheet {
         token.setColumn(col);
 
         // parse the formula string into a postfix token stack
-        Stack<Token> postfix = new Stack<>();
-        SpreadsheetUtils.getFormula(formula);
+        Stack<Token> postfix = SpreadsheetUtils.getFormula(formula);
 
         // update and recalculate
         changeCellFormulaAndRecalculate(token, formula, postfix);
