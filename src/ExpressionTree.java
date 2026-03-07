@@ -92,6 +92,41 @@ public class ExpressionTree {
     }
 
     /**
+     * Creates and returns a copy of this ExpressionTree.
+     * <p>
+     * The returned tree has the same structure and tokens as the original,
+     * but consists of entirely new ExpressionTreeNode objects. This allows
+     * the spreadsheet to save the tree before modification and restore it
+     * later without risk of shared references.
+     *
+     * @return a new ExpressionTree that is a structural copy of this tree
+     */
+    public ExpressionTree copyExpressionTree() {
+        ExpressionTree copy = new ExpressionTree();
+        copy.root = copyExpressionTreeNode(this.root);
+        return copy;
+    }
+
+    /**
+     * Recursively creates a copy of the given ExpressionTreeNode.
+     * <p>
+     * Tokens are reused because they are immutable, but new node objects
+     * are created for the left and right subtrees. This ensures that the
+     * copied ExpressionTree is fully independent of the original.
+     *
+     * @param node the node to copy
+     * @return a deep copy of the node, or null if the node is null
+     */
+    private ExpressionTreeNode copyExpressionTreeNode(ExpressionTreeNode node) {
+        if (node == null) return null;
+        return new ExpressionTreeNode(
+                node.token,
+                copyExpressionTreeNode(node.left),
+                copyExpressionTreeNode(node.right)
+        );
+    }
+
+    /**
      * Evaluates the expression tree and returns the integer result.
      * Uses a post-order traversal: evaluate left subtree, evaluate right subtree,
      * then apply the operator at the current node.

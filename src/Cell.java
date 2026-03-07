@@ -66,6 +66,34 @@ public class Cell {
     }
 
     /**
+     * Returns a copy of this cell's current expression tree.
+     * <p>
+     * This method is used before modifying a cell's formula so that the
+     * spreadsheet can restore the original tree if a cycle is later detected.
+     * The returned ExpressionTree is independent of the original and can be
+     * safely modified without affecting the cell's current state.
+     *
+     * @return a deep copy of the current ExpressionTree, or null if no tree exists
+     */
+    public ExpressionTree getExpressionTreeCopy() {
+        return expressionTree == null ? null : expressionTree.copyExpressionTree();
+    }
+
+    /**
+     * Replaces this cell's current expression tree with the specified tree.
+     * <p>
+     * This method is used during rollback when a cycle is detected in the
+     * dependency graph. The spreadsheet restores the previously saved
+     * ExpressionTree so that the cell's internal representation matches
+     * its original formula.
+     *
+     * @param tree the ExpressionTree to set back
+     */
+    public void setExpressionTree(ExpressionTree tree) {
+        this.expressionTree = tree;
+    }
+
+    /**
      * Builds the ExpressionTree for this cell from a postfix token stack.
      * !!!Call this after parsing the formula with getFormula() in Spreadsheet.
      *

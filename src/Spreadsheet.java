@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -24,8 +25,8 @@ public class Spreadsheet {
     public static final int ROWS = 8;
     public static final int COLUMNS = 8;
 
-    private Cell[][] cells;
-    private DependencyGraph graph = new DependencyGraph();
+    private final Cell[][] cells;
+    private final DependencyGraph graph = new DependencyGraph();
 
     /**
      * Constructs a new spreadsheet using the default rows and columns
@@ -106,12 +107,23 @@ public class Spreadsheet {
      * cells in dependency-safe order.
      *
      * This is the core recalculation pipeline:
-     *  1. Store new formula
-     *  2. Build expression tree from postfix tokens
-     *  3. Extract referenced cells
-     *  4. Update DependencyGraph edges
-     *  5. Topologically sort all cells
-     *  6. Evaluate cells in sorted order
+     *  1. Save the Cell's previous formula, expression tree, and dependencies
+     *  2. Store new formula
+     *  3. Build expression tree from postfix tokens
+     *  4. Extract referenced cells
+     *  5. Update DependencyGraph edges
+     *  6. Topologically sort all cells
+     *  7. Evaluate cells in sorted order
+     *
+     *  If cycle detected:
+     *  1. Topological sort automatically restores the Cell's value
+     *  2. This method will restore the Cell's previous:
+     *      - formula string
+     *      - ExpressionTree
+     *      - dependency edges in the graph
+     *
+     * This ensures the spreadsheet remains in a consistent state even
+     * when an invalid formula is entered.
      *
      * @param token - the cell being modified
      * @param formula - the raw formula string
@@ -120,6 +132,10 @@ public class Spreadsheet {
     public void changeCellFormulaAndRecalculate(CellToken token, String formula, Stack<Token> postfix) {
         Cell cell = getCell(token);
 
+        String oldFormula = cell.getFormula();
+        ExpressionTree oldTree = cell.getExpressionTreeCopy();
+        Set<Cell> oldDeps = graph.getDependencies(cell);
+
         cell.setFormula(formula);
         cell.buildExpressionTree(postfix);
         List<Cell> refs = extractReferences(postfix);
@@ -127,14 +143,18 @@ public class Spreadsheet {
         graph.clearDependencies(cell);
         for (Cell ref : refs) {
             graph.addDependencies(ref, cell);
-
         }
 
         TopologicalSort sort = new TopologicalSort(this, graph);
         boolean isSorted = sort.topsort();
 
         if (!isSorted) {
-            
+            cell.setFormula(oldFormula);
+            cell.setExpressionTree(oldTree);
+            graph.clearDependencies(cell);
+            for  (Cell dep : oldDeps) {
+                graph.addDependencies(dep, cell);
+            }
         }
     }
 
