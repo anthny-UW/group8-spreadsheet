@@ -6,7 +6,7 @@ import java.util.Stack;
 /**
  * Represents a 2D spreadsheet of Cell objects and coordinates all formula updates,
  * dependency tracking, expression tree construction, and recalculation.
- *
+ * <p>
  * The Spreadsheet is responsible for:
  *  - Storing a grid of Cell objects
  *  - Updating a cell's formula and expression tree
@@ -14,7 +14,7 @@ import java.util.Stack;
  *  - Maintaining the DependencyGraph (dependency → dependent)
  *  - Performing a topological sort to determine evaluation order
  *  - Recalculating all affected cells in dependency-safe order
- *
+ * <p>
  * This class does NOT parse formulas itself; parsing is handled by SpreadsheetUtils.
  *
  * @author Anthony
@@ -105,7 +105,7 @@ public class Spreadsheet {
      * Updates the formula of the specified cell, rebuilds its expression tree,
      * updates dependency edges, performs a topological sort, and evaluates all
      * cells in dependency-safe order.
-     *
+     * <p>
      * This is the core recalculation pipeline:
      *  1. Save the Cell's previous formula, expression tree, and dependencies
      *  2. Store new formula
@@ -114,14 +114,14 @@ public class Spreadsheet {
      *  5. Update DependencyGraph edges
      *  6. Topologically sort all cells
      *  7. Evaluate cells in sorted order
-     *
+     * <p>
      *  If cycle detected:
      *  1. Topological sort automatically restores the Cell's value
      *  2. This method will restore the Cell's previous:
      *      - formula string
      *      - ExpressionTree
      *      - dependency edges in the graph
-     *
+     * <p>
      * This ensures the spreadsheet remains in a consistent state even
      * when an invalid formula is entered.
      *

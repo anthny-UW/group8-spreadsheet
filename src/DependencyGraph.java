@@ -25,7 +25,7 @@ public class DependencyGraph {
      * Ensures that the cell exists in both maps.
      * Avoids nulls checks.
      *
-     * @param c
+     * @param c - cell to be registered to the graph
      */
     private void register(Cell c) {
         incoming.putIfAbsent(c, new HashSet<Cell>());
@@ -36,7 +36,7 @@ public class DependencyGraph {
      * Removes ALL dependencies pointing to this cell.
      * Called whenever the cell's formula changes.
      *
-     * @param cell
+     * @param cell - cell to be cleared
      */
     public void clearDependencies(Cell cell) {
         register(cell);
@@ -51,8 +51,8 @@ public class DependencyGraph {
     /**
      * Adds a dependency edge: from -> to.
      *
-     * @param from
-     * @param to
+     * @param from - dependency
+     * @param to - dependent
      */
     public void addDependencies(Cell from, Cell to) {
         register(from);
@@ -65,7 +65,7 @@ public class DependencyGraph {
     /**
      * Returns all cells that THIS cell depends on.
      *
-     * @param cell
+     * @param cell - cell we are retrieving dependencies from
      * @return set of dependencies.
      */
     public Set<Cell> getDependencies(Cell cell) {
@@ -75,7 +75,7 @@ public class DependencyGraph {
 
     /**
      * Returns all cells that depend on THIS cell.
-     * @param cell
+     * @param cell - cell we are retrieving dependents from
      * @return set of dependents.
      */
     public Set<Cell> getDependents(Cell cell) {

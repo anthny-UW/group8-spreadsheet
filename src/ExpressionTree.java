@@ -3,10 +3,10 @@ import java.util.Stack;
 /**
  * An expression tree built from a postfix stack of Tokens.
  * Used to represent and evaluate a cell's formula.
- *
+ * <p>
  * The tree is a binary tree (NOT a binary search tree).
  * Operator nodes have two children. Literal/cell nodes are leaves.
- *
+ * <p>
  * Example: formula "5 + B3 * 8" becomes postfix "5 B3 8 * +"
  * and produces:
  *        +

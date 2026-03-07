@@ -66,7 +66,7 @@ public class SpreadsheetUtils {
     /**
      * Parses a cell reference (e.g., "A3", "BC12") from a string starting at startIndex.
      * Sets cellToken's row and column if valid, and sets both to BadCell if invalid.
-     *
+     * <p>
      * Column letters: A=0, B=1, ..., Z=25, AA=26, AB=27, ...
      * Row: non-negative integer following the letters.
      *
@@ -209,7 +209,7 @@ public class SpreadsheetUtils {
      * Parses an infix formula string and returns a Stack of Tokens
      * representing the equivalent postfix expression.
      * Reading from the bottom to the top of the stack gives the postfix order.
-     *
+     * <p>
      * Supported tokens: integer literals, cell references (e.g., A3), operators +, -, *, /, (, )
      * Operator precedence: * and / have higher precedence than + and -.
      *

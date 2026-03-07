@@ -13,14 +13,14 @@ import java.util.Stack;
 public class TopologicalSort {
     
     // Cell states for topsort
-    private static final int unevalutedCell = 0;
+    private static final int unevaluatedCell = 0;
     private static final int evaluatingCell = 1;
     private static final int evaluatedCell = 2;
     
-    private Spreadsheet mySpreadsheet;
-    private DependencyGraph myDependencyGraph;
-    private HashMap<Cell, Integer> myEvaluateState;
-    private HashMap<Cell, Integer> myOldCells;    // Holds the old cell values
+    private final Spreadsheet mySpreadsheet;
+    private final DependencyGraph myDependencyGraph;
+    private final HashMap<Cell, Integer> myEvaluateState;
+    private final HashMap<Cell, Integer> myOldCells;    // Holds the old cell values
     private boolean myCycleDetected;
     
     /**
@@ -47,7 +47,7 @@ public class TopologicalSort {
         // Initializing all cells as unevaluated
         Set<Cell> allCells = myDependencyGraph.getAllCells();
         for (Cell cell : allCells) {
-            myEvaluateState.put(cell, unevalutedCell);
+            myEvaluateState.put(cell, unevaluatedCell);
             // Holds old cell values in-case there is a cycle.
             myOldCells.put(cell, cell.getValue());   
         }
@@ -56,7 +56,7 @@ public class TopologicalSort {
         
         // Performs a DFS on all unevaluated cells
         for (Cell cell : allCells) {
-            if (myEvaluateState.get(cell) == unevalutedCell && !myCycleDetected) {
+            if (myEvaluateState.get(cell) == unevaluatedCell && !myCycleDetected) {
                 dfs(cell);
             }
         }
@@ -76,7 +76,7 @@ public class TopologicalSort {
         
         while (!stack.isEmpty() && !myCycleDetected) {
             Cell cell = stack.peek();
-            int state = myEvaluateState.getOrDefault(cell, unevalutedCell);
+            int state = myEvaluateState.getOrDefault(cell, unevaluatedCell);
             
             if (state == evaluatedCell) {
                 // Already evaluated
@@ -98,7 +98,7 @@ public class TopologicalSort {
             // Evaluate all cells that this cell depends on (incoming dependencies)
             Set<Cell> dependencies = myDependencyGraph.getDependencies(cell);
             for (Cell dependency : dependencies) {
-                int depState = myEvaluateState.getOrDefault(dependency, unevalutedCell);
+                int depState = myEvaluateState.getOrDefault(dependency, unevaluatedCell);
                 
                 if (depState == evaluatingCell) {
                     // Cycle found
@@ -108,7 +108,7 @@ public class TopologicalSort {
                     return;
                 }
                 
-                if (depState == unevalutedCell) {
+                if (depState == unevaluatedCell) {
                     // Push unevaluated dependency onto stack
                     stack.push(dependency);
                 }
@@ -121,10 +121,8 @@ public class TopologicalSort {
      * Should be called when there is a cycle.
      */
     private void revertToOldCells() {
-        if (myOldCells != null) {
-            for (Cell cell : myOldCells.keySet()) {
-                cell.setValue(myOldCells.get(cell));
-            }
+        for (Cell cell : myOldCells.keySet()) {
+            cell.setValue(myOldCells.get(cell));
         }
     }
     
