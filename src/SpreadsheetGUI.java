@@ -148,7 +148,7 @@ public final class SpreadsheetGUI extends JFrame {
                         // only save the cells with a formula. Empty cells default to zero no need to save them
                         if (formula != null && !formula.isEmpty()) {
                             // convert the column number back to letter
-                            String cellName = (char) ('A' + col) + String.valueOf(row);
+                            String cellName = columnToName(col) + row;
                             //write one line: B3 = A1+B1
                             writer.println(cellName + " = " + formula);
                         }
@@ -195,8 +195,17 @@ public final class SpreadsheetGUI extends JFrame {
                     String cellName = parts[0].trim();
                     String formula = parts[1].trim();
 
-                    int col = cellName.charAt(0) - 'A';
-                    int row = Integer.parseInt(cellName.substring(1));
+                    // Extract letters (column) and digits (row)
+                    int i = 0;
+                    while (i < cellName.length() && Character.isLetter(cellName.charAt(i))) {
+                        i++;
+                    }
+
+                    String colLetters = cellName.substring(0, i);
+                    String rowDigits = cellName.substring(i);
+
+                    int col = nameToColumn(colLetters);
+                    int row = Integer.parseInt(rowDigits);
 
                     //send the formula to the backend it parses the formula builds an expression tree
                     //and updates the dependency graph
@@ -246,7 +255,7 @@ public final class SpreadsheetGUI extends JFrame {
 
         // reset the formula bar and cell label back to default
         formulaBar.setText("");
-        cellLabel.setText("A1");
+        cellLabel.setText(columnToName(0) + "1");
 
         // clear the cell selection
         table.clearSelection();
@@ -307,7 +316,7 @@ public final class SpreadsheetGUI extends JFrame {
         String[] columnHeaders = new String[COLS + 1];
         columnHeaders[0] = ""; // the first one is blank
         for (int col = 0; col < COLS; col++) {
-            columnHeaders[col + 1] = String.valueOf((char) ('A' + col));
+            columnHeaders[col + 1] = columnToName(col);
         }
         // Build the initial empty grid data
         Object[][] data = new Object[ROWS][COLS + 1];
@@ -403,7 +412,7 @@ public final class SpreadsheetGUI extends JFrame {
             formulaBar.setText(typed);
 
             // update cell label
-            String cellName = (char) ('A' + col) + String.valueOf(row + 1);
+            String cellName = columnToName(col) + (row + 1);
             cellLabel.setText(cellName);
 
             // send the value to the backend so it isn't lost on refresh
@@ -443,7 +452,7 @@ public final class SpreadsheetGUI extends JFrame {
             return;
 
         // update the cell label (e.g. "A1")
-        String cellName = (char) ('A' + rowCol) + String.valueOf(row + 1);
+        String cellName = columnToName(rowCol) + (row + 1);
         cellLabel.setText(cellName);
 
         // get the formula from your backend and show it in the formula bar
@@ -556,6 +565,42 @@ public final class SpreadsheetGUI extends JFrame {
             }
         }
 
+    }
+
+
+    /**
+     * Converts a zero-based column index into an Excel-style column name.
+     * For example: 0 → "A", 25 → "Z", 26 → "AA".
+     *
+     * @param col - zero-based column index
+     * @return the corresponding column name
+     */
+    private String columnToName(int col) {
+        StringBuilder sb = new StringBuilder();
+        col++; // convert 0-based to 1-based
+
+        while (col > 0) {
+            col--; // shift to 0–25
+            sb.insert(0, (char)('A' + (col % 26)));
+            col /= 26;
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Converts an Excel-style column name into a zero-based index.
+     * For example: "A" → 0, "Z" → 25, "AA" → 26.
+     *
+     * @param name column name consisting of one or more letters
+     * @return zero-based column index
+     */
+    private int nameToColumn(String name) {
+        int col = 0;
+        for (int i = 0; i < name.length(); i++) {
+            col = col * 26 + (name.charAt(i) - 'A' + 1);
+        }
+        return col - 1; // convert back to 0-based
     }
 
 }

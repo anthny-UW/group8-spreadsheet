@@ -22,8 +22,11 @@ import java.util.Stack;
  */
 public class Spreadsheet {
 
-    public static final int ROWS = 8;
-    public static final int COLUMNS = 8;
+    /**
+     * Size of table.
+     */
+    public static final int ROWS = 30;
+    public static final int COLUMNS = 30;
 
     private final Cell[][] cells;
     private final DependencyGraph graph = new DependencyGraph();
