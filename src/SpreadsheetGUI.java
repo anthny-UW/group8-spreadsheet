@@ -300,6 +300,14 @@ public final class SpreadsheetGUI extends JFrame {
                 isRefreshing = false;
             }
         });
+
+        formulaBar.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                formulaBar.requestFocusInWindow();
+            }
+        });
+
         panel.add(cellLabel, BorderLayout.WEST);
         panel.add(formulaBar, BorderLayout.CENTER);
 
@@ -500,6 +508,7 @@ public final class SpreadsheetGUI extends JFrame {
 
         // refresh the visual table to show new values
         refreshTable();
+        table.requestFocusInWindow();
     }
 
     /**
