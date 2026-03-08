@@ -21,7 +21,6 @@ public class TopologicalSort {
     private final Spreadsheet mySpreadsheet;
     private final DependencyGraph myDependencyGraph;
     private final HashMap<Cell, Integer> myEvaluateState;
-    private final HashMap<Cell, Double> myOldCells;    // Holds the old cell values
     private boolean myCycleDetected;
 
     /**
@@ -34,7 +33,6 @@ public class TopologicalSort {
         mySpreadsheet = theSpreadsheet;
         myDependencyGraph = theDependencyGraph;
         myEvaluateState = new HashMap<>();
-        myOldCells = new HashMap<>();
         myCycleDetected = false;
     }
 
@@ -49,8 +47,6 @@ public class TopologicalSort {
         Set<Cell> allCells = myDependencyGraph.getAllCells();
         for (Cell cell : allCells) {
             myEvaluateState.put(cell, unevaluatedCell);
-            // Holds old cell values in-case there is a cycle.
-            myOldCells.put(cell, cell.getValue());
         }
 
         myCycleDetected = false;
@@ -103,11 +99,9 @@ public class TopologicalSort {
 
                 if (depState == evaluatingCell) {
                     // Cycle found
-                    System.out.println("Error: Cycle detected in dependency graph.");
                     JOptionPane.showMessageDialog(null, "Cycle detected in cell's formula." +
                             "\nReverting Changes.");
                     myCycleDetected = true;
-                    revertToOldCells();
                     return;
                 }
 
@@ -119,15 +113,6 @@ public class TopologicalSort {
         }
     }
 
-    /**
-     * Reverts the evaluations made to the cells.
-     * Should be called when there is a cycle.
-     */
-    private void revertToOldCells() {
-        for (Cell cell : myOldCells.keySet()) {
-            cell.setValue(myOldCells.get(cell));
-        }
-    }
 
     /**
      * Returns true if a cycle was found during the sort.
