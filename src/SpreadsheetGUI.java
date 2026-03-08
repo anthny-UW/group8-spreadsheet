@@ -80,13 +80,13 @@ public final class SpreadsheetGUI extends JFrame {
         pack();
         // lets the user resize manually if needed
         setResizable(true);
-        setLocationRelativeTo(null); // center on screen
+        // center on screen
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
     /**
-     * Creates and attatches the menu bar to the frame
-     *
+     * Creates and attaches the menu bar to the frame
      */
     private void createMenuBar() {
         // Create a menu bar that attaches to the JFrame
@@ -166,6 +166,9 @@ public final class SpreadsheetGUI extends JFrame {
 
     /**
      * Loads spreadsheet formulas from the file the user selects.
+     * Opens a dialog so the user can browse and select a previously saved spreadsheet file
+     * once the file is chosen it is read and restores each cell's formula by
+     * forwarding it to the backend as if the user had typed it manually.
      */
     private void loadFromFile() {
         //Open a dialog box so the user can pick which file to load
