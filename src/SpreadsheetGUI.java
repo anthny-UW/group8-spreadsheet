@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.io.*;
+import java.util.Stack;
 
 /**
  * SpreadsheetGUI is the graphical user interface for the spreadsheet application.
@@ -212,6 +213,7 @@ public final class SpreadsheetGUI extends JFrame {
 
                     //send the formula to the backend it parses the formula builds an expression tree
                     //and updates the dependency graph
+                    cellCache[row][col] = formula;
                     spreadsheet.changeCell(row, col, formula);
                 }
 
@@ -425,7 +427,7 @@ public final class SpreadsheetGUI extends JFrame {
                 spreadsheet.changeCell(row, col , typed);
                 refreshTable();
 
-                String formula = spreadsheet.getFormula(col, row );
+                String formula = spreadsheet.getFormula(row, col);
                 formulaBar.setText(formula == null || formula.equals("0") ? "" : formula);
             } else {
                 // cell was cleared reset to zero
@@ -511,18 +513,27 @@ public final class SpreadsheetGUI extends JFrame {
         // loop through every cell in the spreadsheet
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
+
                 // get the cells computed integer value from the backend
                 double value = spreadsheet.getValue(row, col);
                 String formula = spreadsheet.getFormula(row, col);
                 // get cached value for this cell
                 String cached = cellCache[row][col];
 
-                // row+1 because row 0 is the header now
                 if (value != 0) {
-                    tableModel.setValueAt(Spreadsheet.formatValue(value), row , col + 1);
-                } else if (formula == null || formula.isEmpty() || formula.equals("0")) {
-                    // formula evaluates to zero
-                    tableModel.setValueAt("", row, col + 1);
+                    // non-zero result- display the computed value
+                    tableModel.setValueAt(String.valueOf((int)value), row , col + 1);
+                } else if (formula != null && !formula.isEmpty() && !formula.equals("0")) {
+                    //check if this is a real formula or just plain text
+                    Stack<Token> textStack = SpreadsheetUtils.getFormula(formula);
+                    if (textStack.isEmpty()){
+                        // plain text e.g "word" - display as is
+                        tableModel.setValueAt(formula, row , col + 1);
+                    } else {
+                        // valid formula evaluates to zero - show zero and clear cache
+                        tableModel.setValueAt("0", row, col + 1);
+                        cellCache[row][col] = null;
+                    }
                 } else if (cached != null && !cached.isEmpty()) {
                     tableModel.setValueAt(cached, row, col + 1);
                 } else {
@@ -536,6 +547,7 @@ public final class SpreadsheetGUI extends JFrame {
         isRefreshing = false;
         // resize all columns to fit their content after updating values
         autoFitColumns();
+
     }
 
     /**

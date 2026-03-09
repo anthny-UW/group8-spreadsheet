@@ -270,6 +270,7 @@ public class Spreadsheet {
      * @param formula the formula string
      */
     public void changeCell(int row, int col, String formula) {
+
         // build a CellToken for this cell
         CellToken token = new CellToken();
         token.setRow(row);

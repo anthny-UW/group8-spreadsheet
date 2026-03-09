@@ -222,6 +222,16 @@ public class SpreadsheetUtils {
      * @return a Stack of Token objects in postfix order (bottom=first, top=last)
      */
     public static Stack<Token> getFormula(String formula) {
+
+        // Handling a leading negative sign like -2+2 so we add a zero to the beginning of the
+        // equation so it now looks like 0-2+2 which the parser can handle
+        formula = formula.trim();
+        if (formula.startsWith("-")){
+            formula = "0" + formula;
+        }
+        // Handles  "(-" to turn into "(0-"
+        formula = formula.replace("(-", "(0-");
+
         Stack<Token> returnStack   = new Stack<>();  // output postfix stack
         Stack<Token> operatorStack = new Stack<>();  // temporary operator stack
         boolean error = false;
