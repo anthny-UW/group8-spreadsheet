@@ -550,7 +550,7 @@ public final class SpreadsheetGUI extends JFrame {
 
                 if (value != 0) {
                     // non-zero result- display the computed value
-                    tableModel.setValueAt(String.valueOf((int)value), row , col + 1);
+                    tableModel.setValueAt(String.valueOf((double)value), row , col + 1);
                 } else if (formula != null && !formula.isEmpty() && !formula.equals("0")) {
                     //check if this is a real formula or just plain text
                     Stack<Token> textStack = SpreadsheetUtils.getFormula(formula);
