@@ -508,6 +508,16 @@ public final class SpreadsheetGUI extends JFrame {
         // send formula to your backend spreadsheet
         spreadsheet.changeCell(row, rowCol, formula);
 
+        // sync cache to backend in case of a cycle caused a revert
+        String backendFormula = spreadsheet.getFormula(row, rowCol);
+        if (backendFormula == null || backendFormula.equals("0")) {
+            // cell was blank - clear the cache
+            cellCache[row][col] = null;
+        } else if(!backendFormula.equals(formula)) {
+            // cell had a previous value - restore the cache to that value
+            cellCache[row][col] = backendFormula;
+        }
+
         // refresh the visual table to show new values
         refreshTable();
         table.requestFocusInWindow();
