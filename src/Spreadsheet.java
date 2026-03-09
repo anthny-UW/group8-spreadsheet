@@ -132,7 +132,7 @@ public class Spreadsheet {
      * @param formula - the raw formula string
      * @param postfix - the postfix token stack produced by SpreadsheetUtils
      */
-    public void changeCellFormulaAndRecalculate(CellToken token, String formula, Stack<Token> postfix) {
+    public boolean changeCellFormulaAndRecalculate(CellToken token, String formula, Stack<Token> postfix) {
         Cell cell = getCell(token);
 
         String oldFormula = cell.getFormula();
@@ -159,7 +159,9 @@ public class Spreadsheet {
             for  (Cell dep : oldDeps) {
                 graph.addDependencies(dep, cell);
             }
+            return false;   // cycle detected
         }
+        return true;        // success
     }
 
     /**
@@ -269,9 +271,7 @@ public class Spreadsheet {
      * @param row row index
      * @param formula the formula string
      */
-    public void changeCell(int row, int col, String formula) {
-
-        // build a CellToken for this cell
+    public boolean changeCell(int row, int col, String formula) {
         CellToken token = new CellToken();
         token.setRow(row);
         token.setColumn(col);
@@ -279,7 +279,6 @@ public class Spreadsheet {
         // parse the formula string into a postfix token stack
         Stack<Token> postfix = SpreadsheetUtils.getFormula(formula);
 
-        // update and recalculate
-        changeCellFormulaAndRecalculate(token, formula, postfix);
+        return changeCellFormulaAndRecalculate(token, formula, postfix);
     }
 }

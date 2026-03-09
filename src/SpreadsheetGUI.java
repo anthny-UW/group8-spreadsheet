@@ -430,17 +430,26 @@ public final class SpreadsheetGUI extends JFrame {
 
             // send the value to the backend so it isn't lost on refresh
             if (!typed.isEmpty()) {
-                // save to cache so that refresh does not wipe it
+                boolean success = spreadsheet.changeCell(row, col, typed);
+                if (!success) {
+                    // clear cache for this cell
+                    cellCache[row][col] = null;
+                    // restore formula bar to backend's actual formula
+                    String reverted = spreadsheet.getFormula(row, col);
+                    formulaBar.setText(reverted == null || reverted.isBlank() ? "" : reverted);
+                    refreshTable();
+                    return;
+                }
+                // success: store typed formula
                 cellCache[row][col] = typed;
-                spreadsheet.changeCell(row, col , typed);
                 refreshTable();
 
                 String formula = spreadsheet.getFormula(row, col);
-                formulaBar.setText(formula == null || formula.equals("0") ? "" : formula);
+                formulaBar.setText(formula == null || formula.isBlank() ? "" : formula);
             } else {
                 // cell was cleared reset to zero
                 cellCache[row][col] = null;
-                spreadsheet.changeCell(row, col, "0");
+                spreadsheet.changeCell(row, col, "");
                 formulaBar.setText("");
                 refreshTable();
             }
